@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Clock</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a1a, #4d4d4d);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+        }
+        main {
+            border: 3px solid white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+        #first_display {
+            margin: 10px;
+            background-color: rgba(0, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 30px;
+            font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+        }
+        #date {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        #time {
+            font-size: 60px;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+        #ampm {
+            font-size: 24px;
+            margin-top: 10px;
+        }
+        #weeks {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            font-size: 22px;
+        }
+        #weeks p {
+            margin: 0;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        #weeks p.highlight {
+            background-color: rgba(248, 13, 131, 0.5); 
+            font-weight: bold;
+        }
+        #weeks p:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <article>
+            <section id="weeks">
+                <p>Sun</p>
+                <p>Mon</p>
+                <p>Tue</p>
+                <p>Wed</p>
+                <p>Thu</p>
+                <p>Fri</p>
+                <p>Sat</p>
+            </section>
+        </article>
+        <article id="first_display">
+            <div id="date">Date</div>
+            <div id="time">Time</div>
+            <div id="ampm">AM/PM</div>
+        </article>
+    </main>
+    <script>
+        function updateClock() {
+            const now = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            const dateString = now.toLocaleDateString(undefined, options);
+            const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+            const [time, amPm] = timeString.split(' ');
+
+            const currentDayIndex = now.getDay();
+            document.getElementById('date').textContent = dateString;
+            document.getElementById('time').textContent = time;
+            document.getElementById('ampm').textContent = amPm;
+            const days = document.querySelectorAll('#weeks p');
+            days.forEach((day, index) => {
+                day.classList.remove('highlight');
+                if (index === currentDayIndex) {
+                    day.classList.add('highlight'); 
+                }
+            });
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock(); 
+    </script>
+</body>
+</html>
