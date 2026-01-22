@@ -3,87 +3,353 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Digital Clock</title>
+    <title>Advanced Digital & Analog Clock</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-bg: linear-gradient(135deg, #0f0f23, #1a1a2e, #16213e);
+            --secondary-bg: rgba(255, 255, 255, 0.1);
+            --accent-color: #00d4ff;
+            --highlight-color: #ff6b6b;
+            --text-color: #ffffff;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            background: linear-gradient(135deg, #1a1a1a, #4d4d4d);
-            color: white;
+            background: var(--primary-bg);
+            color: var(--text-color);
+            font-family: 'Roboto', sans-serif;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
-            font-family: 'Arial', sans-serif;
+            padding: 20px;
+            overflow-x: hidden;
         }
-        main {
-            border: 3px solid white;
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .clock-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 40px;
+            width: 100%;
+        }
+
+        .clock-section {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
             padding: 30px;
-            border-radius: 15px;
+            box-shadow: var(--shadow);
             text-align: center;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-            background-color: rgba(0, 0, 0, 0.7);
+            min-width: 300px;
+            flex: 1;
+            max-width: 500px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        #first_display {
-            margin: 10px;
-            background-color: rgba(0, 255, 255, 0.2);
-            border-radius: 10px;
-            padding: 30px;
-            font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+
+        .clock-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
         }
+
+        .analog-clock {
+            --clock-size: 250px;
+            position: relative;
+            width: var(--clock-size);
+            height: var(--clock-size);
+            margin: 0 auto 20px;
+        }
+
+        .clock-face {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--secondary-bg) 0%, rgba(0, 0, 0, 0.8) 100%);
+            border: 3px solid var(--accent-color);
+            position: relative;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .hour-marks, .minute-marks {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            left: 0;
+            top: 0;
+            pointer-events: none;
+        }
+
+        .hour-mark, .minute-mark {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform-origin: center center;
+            background: var(--text-color);
+            border-radius: 2px;
+        }
+
+        .hour-mark {
+            width: 4px;
+            height: 18px;
+        }
+
+        .minute-mark {
+            width: 2px;
+            height: 10px;
+            opacity: 0.9;
+        }
+
+        .hour-hand, .minute-hand, .second-hand {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform-origin: 50% 100%;
+            transition: transform 0.3s cubic-bezier(.4, .0, .2, 1);
+        }
+
+        .hour-hand {
+            width: 6px;
+            height: calc(var(--clock-size) * 0.32);
+            background: var(--text-color);
+            border-radius: 3px;
+            transform: translate(-50%, -100%) rotate(0deg);
+        }
+
+        .minute-hand {
+            width: 4px;
+            height: calc(var(--clock-size) * 0.44);
+            background: var(--accent-color);
+            border-radius: 2px;
+            transform: translate(-50%, -100%) rotate(0deg);
+        }
+
+        .second-hand {
+            width: 2px;
+            height: calc(var(--clock-size) * 0.48);
+            background: var(--highlight-color);
+            border-radius: 1px;
+            transform: translate(-50%, -100%) rotate(0deg);
+        }
+
+        .center-dot {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: var(--highlight-color);
+            border-radius: 50%;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 10px var(--highlight-color);
+        }
+
+        .digital-clock {
+            font-family: 'Orbitron', monospace;
+        }
+
         #date {
-            font-size: 24px;
+            font-size: 1.2rem;
             margin-bottom: 15px;
+            opacity: 0.8;
         }
+
         #time {
-            font-size: 60px;
-            font-weight: bold;
+            font-size: 3rem;
+            font-weight: 700;
             margin: 15px 0;
+            text-shadow: 0 0 20px var(--accent-color);
+            animation: glow 2s ease-in-out infinite alternate;
         }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 20px var(--accent-color); }
+            to { text-shadow: 0 0 30px var(--accent-color), 0 0 40px var(--accent-color); }
+        }
+
         #ampm {
-            font-size: 24px;
+            font-size: 1.2rem;
             margin-top: 10px;
+            opacity: 0.8;
         }
-        #weeks {
+
+        .days-of-week {
             display: flex;
             justify-content: space-around;
             margin-top: 20px;
-            font-size: 22px;
+            flex-wrap: wrap;
         }
-        #weeks p {
-            margin: 0;
-            padding: 10px;
-            border-radius: 5px;
-            transition: background-color 0.3s;
+
+        .day {
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-size: 1rem;
+            min-width: 40px;
         }
-        #weeks p.highlight {
-            background-color: rgba(248, 13, 131, 0.5); 
+
+        .day.highlight {
+            background: var(--highlight-color);
+            color: #000;
             font-weight: bold;
+            box-shadow: 0 0 15px rgba(255, 107, 107, 0.5);
         }
-        #weeks p:hover {
-            background-color: rgba(255, 255, 255, 0.2);
+
+        .day:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
         }
+
+        .additional-info {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .clock-container {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .clock-section {
+                min-width: 280px;
+                padding: 20px;
+            }
+
+            .analog-clock {
+                --clock-size: 200px;
+            }
+
+            .hour-mark {
+                transform-origin: 2px 100px;
+            }
+
+            .minute-mark {
+                transform-origin: 1px 100px;
+            }
+
+            #time {
+                font-size: 2.5rem;
+            }
+
+            .days-of-week {
+                gap: 5px;
+            }
+
+            .day {
+                padding: 6px 8px;
+                font-size: 0.9rem;
+                min-width: 35px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .clock-section {
+                padding: 15px;
+                min-width: 250px;
+            }
+
+            .analog-clock {
+                --clock-size: 180px;
+            }
+
+            .hour-mark {
+                transform-origin: 2px 90px;
+            }
+
+            .minute-mark {
+                transform-origin: 1px 90px;
+            }
+
+            #time {
+                font-size: 2rem;
+            }
+
+            #date, #ampm {
+                font-size: 1rem;
+            }
+
+            .days-of-week {
+                justify-content: space-between;
+            }
+
+            .day {
+                padding: 4px 6px;
+                font-size: 0.8rem;
+                min-width: 30px;
+            }
+        }
+
+        /* Animation for clock hands */
+        /* Removed tick animation for second hand */
     </style>
 </head>
 
 <body>
-    <main>
-        <article>
-            <section id="weeks">
-                <p>Sun</p>
-                <p>Mon</p>
-                <p>Tue</p>
-                <p>Wed</p>
-                <p>Thu</p>
-                <p>Fri</p>
-                <p>Sat</p>
-            </section>
-        </article>
-        <article id="first_display">
-            <div id="date">Date</div>
-            <div id="time">Time</div>
-            <div id="ampm">AM/PM</div>
-        </article>
-    </main>
+    <div class="container">
+        <h1 style="font-family: 'Orbitron', monospace; font-size: 2.5rem; text-align: center; margin-bottom: 20px; text-shadow: 0 0 20px var(--accent-color);">Advanced Clock</h1>
+        <div class="clock-container">
+            <div class="clock-section analog-clock-section">
+                <h2 style="margin-bottom: 20px; font-size: 1.5rem;">Analog Clock</h2>
+                <div class="analog-clock">
+                    <div class="clock-face">
+                        <div class="hour-marks"></div>
+                        <div class="minute-marks"></div>
+                        <div class="hour-hand" id="hourHand"></div>
+                        <div class="minute-hand" id="minuteHand"></div>
+                        <div class="second-hand" id="secondHand"></div>
+                        <div class="center-dot"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="clock-section digital-clock-section">
+                <h2 style="margin-bottom: 20px; font-size: 1.5rem;">Digital Clock</h2>
+                <div class="digital-clock">
+                    <div id="date">Date</div>
+                    <div id="time">Time</div>
+                    <div id="ampm">AM/PM</div>
+                    <div class="days-of-week" id="weeks">
+                        <div class="day">Sun</div>
+                        <div class="day">Mon</div>
+                        <div class="day">Tue</div>
+                        <div class="day">Wed</div>
+                        <div class="day">Thu</div>
+                        <div class="day">Fri</div>
+                        <div class="day">Sat</div>
+                    </div>
+                    <div class="additional-info">
+                        <div id="timezone">Timezone: Local</div>
+                        <div id="milliseconds">Milliseconds: 000</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <script>
         function updateClock() {
             const now = new Date();
@@ -93,20 +359,86 @@
             const [time, amPm] = timeString.split(' ');
 
             const currentDayIndex = now.getDay();
+            const milliseconds = now.getMilliseconds().toString().padStart(3, '0');
+
             document.getElementById('date').textContent = dateString;
             document.getElementById('time').textContent = time;
             document.getElementById('ampm').textContent = amPm;
-            const days = document.querySelectorAll('#weeks p');
+            document.getElementById('milliseconds').textContent = `Milliseconds: ${milliseconds}`;
+
+            const days = document.querySelectorAll('.day');
             days.forEach((day, index) => {
                 day.classList.remove('highlight');
                 if (index === currentDayIndex) {
-                    day.classList.add('highlight'); 
+                    day.classList.add('highlight');
                 }
             });
+
+            // Update analog clock
+            const seconds = now.getSeconds();
+            const minutes = now.getMinutes();
+            const hours = now.getHours() % 12;
+
+            // degrees where 0deg is at 12 o'clock
+            const secondDeg = (seconds * 6);
+            const minuteDeg = (minutes * 6) + (seconds * 0.1);
+            const hourDeg = (hours * 30) + (minutes * 0.5);
+
+            console.log(`Analog Time - Hours: ${hours}, Minutes: ${minutes}, Seconds: ${seconds}`);
+            console.log(`Degrees - Hour: ${hourDeg}, Minute: ${minuteDeg}, Second: ${secondDeg}`);
+
+            // apply transforms matching CSS (hands positioned from center and translated up)
+            document.getElementById('secondHand').style.transform = `translate(-50%, -100%) rotate(${secondDeg}deg)`;
+            document.getElementById('minuteHand').style.transform = `translate(-50%, -100%) rotate(${minuteDeg}deg)`;
+            document.getElementById('hourHand').style.transform = `translate(-50%, -100%) rotate(${hourDeg}deg)`;
         }
 
-        setInterval(updateClock, 1000);
-        updateClock(); 
+        // create tick marks dynamically so they're correctly positioned and responsive
+        function createMarks() {
+            const face = document.querySelector('.clock-face');
+            if (!face) return;
+            const hourContainer = face.querySelector('.hour-marks');
+            const minuteContainer = face.querySelector('.minute-marks');
+            hourContainer.innerHTML = '';
+            minuteContainer.innerHTML = '';
+
+            const rect = face.getBoundingClientRect();
+            const radius = rect.width / 2; // center radius
+
+            for (let i = 0; i < 60; i++) {
+                const deg = i * 6;
+                // compute distance from center to place mark at edge minus small offset
+                const hourOffset = Math.round(radius * 0.9);
+                const minuteOffset = Math.round(radius * 0.94);
+                if (i % 5 === 0) {
+                    const mark = document.createElement('div');
+                    mark.className = 'hour-mark';
+                    mark.style.transform = `rotate(${deg}deg) translateY(-${hourOffset}px)`;
+                    hourContainer.appendChild(mark);
+                } else {
+                    const mark = document.createElement('div');
+                    mark.className = 'minute-mark';
+                    mark.style.transform = `rotate(${deg}deg) translateY(-${minuteOffset}px)`;
+                    minuteContainer.appendChild(mark);
+                }
+            }
+        }
+
+        // Update every 100ms for smoother second hand and milliseconds
+        setInterval(updateClock, 100);
+        // initial mark creation and clock update
+        createMarks();
+        updateClock();
+
+        // keep marks responsive
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                createMarks();
+                updateClock();
+            }, 120);
+        });
     </script>
 </body>
 </html>
